@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Animated Proposal with Falling Dots</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300&display=swap" rel="stylesheet">
+    <style>
+        body {
+            background-color: black; /* Black background */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            font-family: 'Roboto', sans-serif;
+            text-align: center;
+            overflow: hidden;
+            position: relative; /* Position relative for the dots */
+        }
+
+        .container {
+            position: relative;
+            display: flex;               /* Added flex display */
+            flex-direction: column;     /* Stack children vertically */
+            justify-content: center;     /* Center vertically */
+            align-items: center;         /* Center horizontally */
+            padding: 20px;              /* Added padding for a nicer look */
+            border-radius: 10px;        /* Rounded corners for the container */
+            box-shadow: 0 5px 20px rgba(255, 255, 255, 0.5); /* Subtle shadow */
+            background-color: rgba(255, 255, 255, 0.1); /* Slight transparency for a soft look */
+            z-index: 1;                 /* Ensures the container is above the dots */
+        }
+
+        .emoji {
+            font-size: 100px;
+            animation: bounce 1s infinite;
+            transition: transform 0.3s ease;
+        }
+
+        .ribbon {
+            position: relative;
+            display: inline-block;
+            padding: 20px;
+            background: linear-gradient(135deg, #ff4081, #ff6f61);
+            color: white;
+            border-radius: 10px;
+            margin-top: 20px;
+            cursor: pointer;
+            text-transform: uppercase;
+            font-weight: bold;
+            box-shadow: 0 5px 15px rgba(255, 255, 255, 0.2);
+        }
+
+        .ribbon:after {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 100%;
+            width: 0;
+            height: 0;
+            border-left: 10px solid transparent;
+            border-right: 10px solid transparent;
+            border-top: 10px solid #ff4081;
+        }
+
+        .hidden-message {
+            display: none;
+            font-size: 24px;
+            margin-top: 20px;
+            color: #fff; /* White text for better contrast */
+        }
+
+        .letter {
+            display: none;
+            font-size: 30px;
+            color: #fff; /* White text for better contrast */
+            margin-top: 15px;
+            animation: pop 0.5s forwards;
+        }
+
+        .read-button {
+            display: none;
+            padding: 10px 20px;
+            background: linear-gradient(to right, #333333, #555555); /* Dark gradient background */
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 18px;
+            cursor: pointer;
+            margin-top: 20px;
+            transition: background-color 0.3s;
+        }
+
+        .read-button:hover {
+            background: linear-gradient(to right, #555555, #333333); /* Reverse gradient on hover */
+        }
+
+        /* Falling dot animation */
+        .dot {
+            position: absolute;
+            border-radius: 50%;
+            opacity: 0; /* Start invisible */
+            z-index: 0; /* Behind the container */
+            animation: fall linear forwards, twinkle 1s infinite alternate; /* Twinkling effect */
+        }
+
+        /* Keyframes for falling animation */
+        @keyframes fall {
+            0% {
+                transform: translateY(0);
+                opacity: 1; /* Fade in */
+            }
+            100% {
+                transform: translateY(100vh); /* Fall to the bottom */
+                opacity: 0; /* Fade out */
+            }
+        }
+
+        /* Keyframes for twinkling effect */
+        @keyframes twinkle {
+            0%, 100% {
+                opacity: 1;
+            }
+            50% {
+                opacity: 0.5; /* Make it dimmer */
+            }
+        }
+
+        @keyframes bounce {
+            0%, 100% {
+                transform: translateY(0);
+            }
+            50% {
+                transform: translateY(-20px);
+            }
+        }
+
+        /* Modal styles */
+        .modal {
+            display: none; /* Hidden by default */
+            position: fixed; /* Stay in place */
+            z-index: 1; /* Sit on top */
+            left: 0;
+            top: 0;
+            width: 100%; /* Full width */
+            height: 100%; /* Full height */
+            overflow: auto; /* Enable scroll if needed */
+            background-color: rgb(0,0,0); /* Fallback color */
+            background-color: rgba(0,0,0,0.8); /* Black w/ opacity */
+            padding-top: 60px; /* Location of the box */
+        }
+
+        .modal-content {
+            background-color: #fefefe;
+            margin: 5% auto; /* 15% from the top and centered */
+            padding: 20px;
+            border: 1px solid #888;
+            width: 80%; /* Could be more or less, depending on screen size */
+            border-radius: 10px;
+        }
+
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+        }
+
+        .close:hover,
+        .close:focus {
+            color: black;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        @keyframes pop {
+            0% {
+                transform: scale(0);
+                opacity: 0;
+            }
+            100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="emoji">🎀</div> <!-- Changed to Ribbon Emoji -->
+        <div class="ribbon" id="ribbonButton">Click me!</div>
+        <div class="hidden-message" id="hiddenMessage">"I’d love the chance to be a little more than friends. How would you feel about that?" 🥰</div>
+        <div class="letter" id="letterMessage">💌 A letter for you!</div>
+        <button class="read-button" id="readButton">Read It!</button>
+    </div>
+
+    <!-- The Modal -->
+    <div id="myModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h1>To Eman Fatima ❤️</h1> <!-- Added heading -->
+            <h2></h2> <!-- Added subheading -->
+            <p>Aaaslamoalaikum!💌
+I hope you are going well.. actually I Like you from a long time but was waiting for the right time, </p>
+            <p>"I've really admired your kindness and personality at school, and I’d love to get to know you better as friends!" </p>
+        <p> If you're okay with it, could we exchange numbers? 😊 It would be nice to stay in touch and have friendly conversations!"</p>
+        <p> Thank Youu..!!</p>
+     <h5>Insta:the_arhumm81<h5/>
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            // Function to create falling dots
+            function createDot() {
+                const dot = $('<div class="dot"></div>');
+                const randomX = Math.random() * 100; // Random position on X
+                const randomSize = Math.random() * 20 + 5; // Random size between 5px and 25px
+                const randomDelay = Math.random() * 2 + 1; // Random delay before falling
+                const fallDuration = Math.random() * 3 + 2; // Random fall duration between 2s and 5s
+
+                // Random color for the dot
+                const randomColor = `hsl(${Math.random() * 360}, 100%, 70%)`; // Color in HSL format
+
+                dot.css({
+                    left: `${randomX}vw`,
+                    width: `${randomSize}px`,
+                    height: `${randomSize}px`,
+                    backgroundColor: randomColor,
+                    animationDuration: `${fallDuration}s`, // Set falling duration
+                });
+
+                dot.on('animationend', function() {
+                    $(this).remove(); // Remove dot after animation ends
+                });
+
+                // Start the animation after a random delay
+                setTimeout(() => {
+                    dot.css('opacity', '1'); // Make the dot visible
+                    dot.css('animation', `fall ${fallDuration}s linear forwards, twinkle 1s infinite alternate`); // Apply falling and twinkling animation
+                }, randomDelay * 1000);
+
+                $('body').append(dot);
+            }
+
+            // Create dots at intervals
+            setInterval(createDot, 400); // Create a new dot every 400ms
+
+            // Show the hidden message on ribbon click
+            $("#ribbonButton").click(function() {
+                $("#hiddenMessage").fadeIn(800, function() {
+                    // After the hidden message fades in, show the letter
+                    $("#letterMessage").fadeIn(500, function() {
+                        // After the letter fades in, show the read button
+                        $("#readButton").fadeIn(300);
+                    });
+                });
+            });
+
+            // Open the modal when the Read It button is clicked
+            $("#readButton").click(function() {
+                $("#myModal").fadeIn(500); // Show modal
+            });
+
+            // Close the modal when the user clicks on <span> (x)
+            $(".close").click(function() {
+                $("#myModal").fadeOut(500); // Hide modal
+            });
+
+            // Close the modal when the user clicks anywhere outside of the modal
+            $(window).click(function(event) {
+                if ($(event.target).is("#myModal")) {
+                    $("#myModal").fadeOut(500); // Hide modal
+                }
+            });
+        });
+    </script>
+</body>
+</html>
